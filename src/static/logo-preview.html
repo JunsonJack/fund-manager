@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智投汪星 - Logo Preview</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      text-align: center;
+    }
+    
+    .logo-wrapper {
+      display: inline-block;
+      padding: 20px;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+    
+    .logo-svg {
+      width: 200px;
+      height: 200px;
+    }
+    
+    .app-name {
+      font-size: 36px;
+      font-weight: 700;
+      color: #1890ff;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+    }
+    
+    .app-slogan {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 40px;
+    }
+    
+    .variations {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 40px;
+    }
+    
+    .variation-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .variation-card.dark {
+      background: #1a1a2e;
+    }
+    
+    .variation-card.gradient {
+      background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+    }
+    
+    .variation-label {
+      font-size: 14px;
+      color: #999;
+      margin-top: 10px;
+    }
+    
+    .variation-card.dark .variation-label {
+      color: #888;
+    }
+    
+    .variation-card.gradient .variation-label {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .size-demos {
+      margin-top: 50px;
+      display: flex;
+      align-items: flex-end;
+      gap: 20px;
+      justify-content: center;
+    }
+    
+    .size-demo {
+      text-align: center;
+    }
+    
+    .size-demo span {
+      display: block;
+      font-size: 12px;
+      color: #999;
+      margin-top: 8px;
+    }
+    
+    .features {
+      margin-top: 50px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 800px;
+    }
+    
+    .feature {
+      background: white;
+      padding: 15px 25px;
+      border-radius: 30px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      font-size: 14px;
+      color: #333;
+    }
+    
+    .feature .icon {
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 主Logo展示 -->
+    <div class="logo-wrapper">
+      <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+        <defs>
+          <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#1890ff;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#096dd9;stop-opacity:1" />
+          </linearGradient>
+          <radialGradient id="glowGradient" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.3" />
+            <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
+          </radialGradient>
+          <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        
+        <!-- 背景圆 -->
+        <circle cx="100" cy="100" r="95" fill="url(#bgGradient)"/>
+        <circle cx="100" cy="100" r="80" fill="url(#glowGradient)"/>
+        
+        <!-- 耳朵 -->
+        <ellipse cx="55" cy="55" rx="22" ry="30" fill="#FFA500" transform="rotate(-20 55 55)"/>
+        <ellipse cx="145" cy="55" rx="22" ry="30" fill="#FFA500" transform="rotate(20 145 55)"/>
+        <ellipse cx="55" cy="55" rx="14" ry="20" fill="#FF8C00" transform="rotate(-20 55 55)"/>
+        <ellipse cx="145" cy="55" rx="14" ry="20" fill="#FF8C00" transform="rotate(20 145 55)"/>
+        
+        <!-- 头部 -->
+        <circle cx="100" cy="95" r="50" fill="url(#bodyGradient)"/>
+        <ellipse cx="100" cy="105" rx="32" ry="28" fill="#FFFFFF"/>
+        
+        <!-- 眼睛 -->
+        <circle cx="82" cy="85" r="10" fill="#333333"/>
+        <circle cx="118" cy="85" r="10" fill="#333333"/>
+        <circle cx="85" cy="82" r="4" fill="#FFFFFF"/>
+        <circle cx="121" cy="82" r="4" fill="#FFFFFF"/>
+        
+        <!-- AI 科技眼 -->
+        <circle cx="82" cy="85" r="6" fill="none" stroke="#00D4FF" stroke-width="2"/>
+        <line x1="76" y1="85" x2="70" y2="85" stroke="#00D4FF" stroke-width="2"/>
+        <line x1="88" y1="85" x2="94" y2="85" stroke="#00D4FF" stroke-width="2"/>
+        <line x1="82" y1="79" x2="82" y2="73" stroke="#00D4FF" stroke-width="2"/>
+        <line x1="82" y1="91" x2="82" y2="97" stroke="#00D4FF" stroke-width="2"/>
+        
+        <circle cx="118" cy="85" r="6" fill="none" stroke="#00D4FF" stroke-width="2"/>
+        <line x1="112" y1="85" x2="106" y2="85" stroke="#00D4FF" stroke-width="2"/>
+        <line x1="124" y1="85" x2="130" y2="85" stroke="#00D4FF" stroke-width="2"/>
+        <line x1="118" y1="79" x2="118" y2="73" stroke="#00D4FF" stroke-width="2"/>
+        <line x1="118" y1="91" x2="118" y2="97" stroke="#00D4FF" stroke-width="2"/>
+        
+        <!-- 鼻子和嘴巴 -->
+        <ellipse cx="100" cy="100" rx="8" ry="6" fill="#333333"/>
+        <path d="M 92 108 Q 100 116 108 108" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round"/>
+        
+        <!-- 腮红 -->
+        <ellipse cx="70" cy="100" rx="8" ry="5" fill="#FFB6C1" opacity="0.6"/>
+        <ellipse cx="130" cy="100" rx="8" ry="5" fill="#FFB6C1" opacity="0.6"/>
+        
+        <!-- 身体 -->
+        <ellipse cx="100" cy="155" rx="35" ry="30" fill="url(#bodyGradient)"/>
+        <ellipse cx="100" cy="160" rx="22" ry="20" fill="#FFFFFF"/>
+        
+        <!-- 爪子 -->
+        <ellipse cx="75" cy="175" rx="12" ry="8" fill="url(#bodyGradient)"/>
+        <ellipse cx="125" cy="175" rx="12" ry="8" fill="url(#bodyGradient)"/>
+        <circle cx="72" cy="175" r="3" fill="#FF8C00"/>
+        <circle cx="78" cy="175" r="3" fill="#FF8C00"/>
+        <circle cx="122" cy="175" r="3" fill="#FF8C00"/>
+        <circle cx="128" cy="175" r="3" fill="#FF8C00"/>
+        
+        <!-- 涨跌箭头 -->
+        <g transform="translate(145, 130)">
+          <path d="M 0 15 L 0 -5 M -8 3 L 0 -5 L 8 3" fill="none" stroke="#00FF88" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        <g transform="translate(55, 130)">
+          <path d="M 0 -15 L 0 5 M -8 -3 L 0 5 L 8 -3" fill="none" stroke="#FF6B6B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        
+        <!-- 科技光环和星星 -->
+        <circle cx="100" cy="45" r="4" fill="#00D4FF"/>
+        <circle cx="85" cy="48" r="3" fill="#00D4FF" opacity="0.7"/>
+        <circle cx="115" cy="48" r="3" fill="#00D4FF" opacity="0.7"/>
+        <polygon points="155,55 157,61 163,61 158,65 160,71 155,67 150,71 152,65 147,61 153,61" fill="#FFD700" opacity="0.8"/>
+        <polygon points="45,65 46,68 49,68 47,70 48,73 45,71 42,73 43,70 41,68 44,68" fill="#FFD700" opacity="0.6"/>
+      </svg>
+    </div>
+    
+    <h1 class="app-name">智投汪星</h1>
+    <p class="app-slogan">🐕 AI智投，旺你收益</p>
+    
+    <!-- 不同背景展示 -->
+    <div class="variations">
+      <div class="variation-card">
+        <svg width="80" height="80" viewBox="0 0 200 200">
+          <use href="#logo-content"/>
+        </svg>
+        <p class="variation-label">浅色背景</p>
+      </div>
+      
+      <div class="variation-card dark">
+        <svg width="80" height="80" viewBox="0 0 200 200">
+          <use href="#logo-content"/>
+        </svg>
+        <p class="variation-label">深色背景</p>
+      </div>
+      
+      <div class="variation-card gradient">
+        <svg width="80" height="80" viewBox="0 0 200 200">
+          <use href="#logo-content"/>
+        </svg>
+        <p class="variation-label">渐变背景</p>
+      </div>
+    </div>
+    
+    <!-- 不同尺寸展示 -->
+    <div class="size-demos">
+      <div class="size-demo">
+        <svg width="24" height="24" viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="95" fill="#1890ff"/>
+          <circle cx="100" cy="95" r="40" fill="#FFD700"/>
+          <ellipse cx="100" cy="105" rx="25" ry="20" fill="#FFF"/>
+          <circle cx="88" cy="88" r="6" fill="#333"/>
+          <circle cx="112" cy="88" r="6" fill="#333"/>
+          <ellipse cx="100" cy="100" rx="5" ry="4" fill="#333"/>
+        </svg>
+        <span>24px</span>
+      </div>
+      
+      <div class="size-demo">
+        <svg width="36" height="36" viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="95" fill="#1890ff"/>
+          <circle cx="100" cy="95" r="40" fill="#FFD700"/>
+          <ellipse cx="100" cy="105" rx="25" ry="20" fill="#FFF"/>
+          <circle cx="88" cy="88" r="6" fill="#333"/>
+          <circle cx="112" cy="88" r="6" fill="#333"/>
+          <ellipse cx="100" cy="100" rx="5" ry="4" fill="#333"/>
+        </svg>
+        <span>36px</span>
+      </div>
+      
+      <div class="size-demo">
+        <svg width="48" height="48" viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="95" fill="#1890ff"/>
+          <circle cx="100" cy="95" r="40" fill="#FFD700"/>
+          <ellipse cx="100" cy="105" rx="25" ry="20" fill="#FFF"/>
+          <circle cx="88" cy="88" r="6" fill="#333"/>
+          <circle cx="112" cy="88" r="6" fill="#333"/>
+          <ellipse cx="100" cy="100" rx="5" ry="4" fill="#333"/>
+        </svg>
+        <span>48px</span>
+      </div>
+      
+      <div class="size-demo">
+        <svg width="64" height="64" viewBox="0 0 200 200">
+          <use href="#logo-content"/>
+        </svg>
+        <span>64px</span>
+      </div>
+      
+      <div class="size-demo">
+        <svg width="96" height="96" viewBox="0 0 200 200">
+          <use href="#logo-content"/>
+        </svg>
+        <span>96px</span>
+      </div>
+    </div>
+    
+    <!-- 特性标签 -->
+    <div class="features">
+      <div class="feature"><span class="icon">🤖</span>AI智能分析</div>
+      <div class="feature"><span class="icon">📊</span>实时行情</div>
+      <div class="feature"><span class="icon">🎯</span>波段信号</div>
+      <div class="feature"><span class="icon">💰</span>持仓管理</div>
+      <div class="feature"><span class="icon">⭐</span>自选基金</div>
+    </div>
+  </div>
+  
+  <!-- 隐藏的完整Logo定义 -->
+  <svg style="display: none;">
+    <defs>
+      <linearGradient id="bgGradientH" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#1890ff;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#096dd9;stop-opacity:1" />
+      </linearGradient>
+      <linearGradient id="bodyGradientH" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    <symbol id="logo-content" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="95" fill="url(#bgGradientH)"/>
+      <ellipse cx="55" cy="55" rx="22" ry="30" fill="#FFA500" transform="rotate(-20 55 55)"/>
+      <ellipse cx="145" cy="55" rx="22" ry="30" fill="#FFA500" transform="rotate(20 145 55)"/>
+      <circle cx="100" cy="95" r="50" fill="url(#bodyGradientH)"/>
+      <ellipse cx="100" cy="105" rx="32" ry="28" fill="#FFF"/>
+      <circle cx="82" cy="85" r="10" fill="#333"/>
+      <circle cx="118" cy="85" r="10" fill="#333"/>
+      <circle cx="85" cy="82" r="4" fill="#FFF"/>
+      <circle cx="121" cy="82" r="4" fill="#FFF"/>
+      <ellipse cx="100" cy="100" rx="8" ry="6" fill="#333"/>
+      <path d="M 92 108 Q 100 116 108 108" fill="none" stroke="#333" stroke-width="2.5"/>
+    </symbol>
+  </svg>
+</body>
+</html>

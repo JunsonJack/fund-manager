@@ -1,0 +1,45 @@
+// 创建简单的TabBar图标
+const fs = require('fs');
+const path = require('path');
+
+// 最小的PNG文件 (1x1 像素透明PNG)
+const minimalPNG = Buffer.from([
+  0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, // PNG signature
+  0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, // IHDR chunk
+  0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, // 1x1 pixel
+  0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4, // RGBA
+  0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41, // IDAT
+  0x54, 0x78, 0x9C, 0x62, 0x00, 0x00, 0x00, 0x02,
+  0x00, 0x01, 0xE5, 0x27, 0xDE, 0xFC, 0x00, 0x00,
+  0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, // IEND
+  0x60, 0x82
+]);
+
+// 创建简单的带颜色的PNG (81x81 像素)
+function createSimplePNG(color) {
+  // 这里我们创建一个基本的PNG，实际应该用canvas库
+  // 暂时使用最小PNG作为占位符
+  return minimalPNG;
+}
+
+const iconsDir = path.join(__dirname, 'dist/build/mp-weixin/static/icons');
+
+// 确保目录存在
+if (!fs.existsSync(iconsDir)) {
+  fs.mkdirSync(iconsDir, { recursive: true });
+}
+
+// 创建占位图标
+const iconNames = [
+  'market.png', 'market-active.png',
+  'watchlist.png', 'watchlist-active.png',
+  'portfolio.png', 'portfolio-active.png',
+  'signal.png', 'signal-active.png'
+];
+
+iconNames.forEach(name => {
+  fs.writeFileSync(path.join(iconsDir, name), minimalPNG);
+  console.log(`Created: ${name}`);
+});
+
+console.log('Icons created successfully!');

@@ -1,0 +1,83 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "市场行情",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/watchlist/index",
+      "style": {
+        "navigationBarTitleText": "自选基金",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/portfolio/index",
+      "style": {
+        "navigationBarTitleText": "持仓管理",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/signal/index",
+      "style": {
+        "navigationBarTitleText": "波段信号",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/fund-detail/index",
+      "style": {
+        "navigationBarTitleText": "基金详情"
+      }
+    },
+    {
+      "path": "pages/settings/index",
+      "style": {
+        "navigationBarTitleText": "设置"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "基金管理",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#f5f5f5",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#1890ff",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "行情",
+        "iconPath": "static/icons/market.png",
+        "selectedIconPath": "static/icons/market-active.png"
+      },
+      {
+        "pagePath": "pages/watchlist/index",
+        "text": "自选",
+        "iconPath": "static/icons/watchlist.png",
+        "selectedIconPath": "static/icons/watchlist-active.png"
+      },
+      {
+        "pagePath": "pages/portfolio/index",
+        "text": "持仓",
+        "iconPath": "static/icons/portfolio.png",
+        "selectedIconPath": "static/icons/portfolio-active.png"
+      },
+      {
+        "pagePath": "pages/signal/index",
+        "text": "信号",
+        "iconPath": "static/icons/signal.png",
+        "selectedIconPath": "static/icons/signal-active.png"
+      }
+    ]
+  }
+}
