@@ -3,9 +3,10 @@
  * 用于获取基金数据
  */
 
-// 天天基金API基础URL
-const BASE_URL = 'http://fund.eastmoney.com'
-const API_URL = 'http://api.fund.eastmoney.com'
+// 天天基金API基础URL（HTTPS）
+const BASE_URL = 'https://fund.eastmoney.com'
+const API_URL = 'https://api.fund.eastmoney.com'
+const PUSH_URL = 'https://push2.eastmoney.com'
 
 /**
  * 封装请求方法
@@ -18,10 +19,10 @@ function request(url, options = {}) {
       data: options.data,
       header: {
         'Content-Type': 'application/json',
-        'Referer': 'http://fund.eastmoney.com/',
+        'Referer': 'https://fund.eastmoney.com/',
         ...options.header
       },
-      timeout: options.timeout || 10000,
+      timeout: options.timeout || 15000,
       success: (res) => {
         if (res.statusCode === 200) {
           resolve(res.data)
@@ -61,10 +62,9 @@ export async function getFundRank(params = {}) {
     pn: params.pageSize || 20,
     dx: 1
   }
-  
+
   try {
     const res = await request(`${BASE_URL}/data/rankhandler.aspx`, { data: defaultParams })
-    // 解析返回数据
     return parseFundRankData(res)
   } catch (e) {
     console.error('获取基金排行失败:', e)
@@ -77,7 +77,7 @@ export async function getFundRank(params = {}) {
  */
 function parseFundRankData(data) {
   if (!data || !data.datas) return []
-  
+
   return data.datas.map(item => {
     const fields = item.split(',')
     return {
@@ -107,7 +107,6 @@ function parseFundRankData(data) {
 export async function getFundDetail(fundCode) {
   try {
     const res = await request(`${BASE_URL}/pingzhongdata/${fundCode}.js`)
-    // 解析JS返回的数据
     return parseFundDetailData(res, fundCode)
   } catch (e) {
     console.error('获取基金详情失败:', e)
@@ -119,8 +118,6 @@ export async function getFundDetail(fundCode) {
  * 解析基金详情数据
  */
 function parseFundDetailData(data, fundCode) {
-  // 这里需要解析JavaScript格式的返回数据
-  // 实际实现时需要更复杂的解析逻辑
   return {
     code: fundCode,
     name: '',
@@ -147,7 +144,7 @@ export async function getNavHistory(fundCode, page = 1, pageSize = 30) {
         pageSize
       }
     })
-    
+
     return parseNavHistoryData(res)
   } catch (e) {
     console.error('获取历史净值失败:', e)
@@ -160,7 +157,7 @@ export async function getNavHistory(fundCode, page = 1, pageSize = 30) {
  */
 function parseNavHistoryData(data) {
   if (!data || !data.Data || !data.Data.LSJZList) return []
-  
+
   return data.Data.LSJZList.map(item => ({
     date: item.FSRQ,
     nav: parseFloat(item.DWJZ) || 0,
@@ -176,15 +173,13 @@ function parseNavHistoryData(data) {
  */
 export async function getFundEstimate(fundCode) {
   try {
-    // 使用JRJ的估值接口
-    const res = await request(`http://fundgz.jrj.com.cn/js/${fundCode}.js`)
-    
-    // 解析返回的JSONP数据
+    const res = await request(`https://fundgz.jrj.com.cn/js/${fundCode}.js`)
+
     const match = res.match(/jsonpgz\((.*?)\)/)
     if (match && match[1]) {
       return JSON.parse(match[1])
     }
-    
+
     return null
   } catch (e) {
     console.error('获取基金估值失败:', e)
@@ -198,7 +193,7 @@ export async function getFundEstimate(fundCode) {
  */
 export async function searchFund(keyword) {
   if (!keyword) return []
-  
+
   try {
     const res = await request(`${BASE_URL}/data/FundGuideapi.aspx`, {
       data: {
@@ -212,14 +207,14 @@ export async function searchFund(keyword) {
         cd: '',
         ms: '',
         fr: '',
-       plevel: '',
+        plevel: '',
         fst: '',
         ft: '',
         fd: keyword,
         key: keyword
       }
     })
-    
+
     return parseSearchData(res)
   } catch (e) {
     console.error('搜索基金失败:', e)
@@ -232,7 +227,7 @@ export async function searchFund(keyword) {
  */
 function parseSearchData(data) {
   if (!data || !data.datas) return []
-  
+
   return data.datas.map(item => {
     const fields = item.split(',')
     return {
@@ -245,15 +240,25 @@ function parseSearchData(data) {
 
 /**
  * 获取大盘指数
+ * 东方财富行情接口
  */
 export async function getIndices() {
   try {
-    // 模拟数据 - 实际应调用指数API
-    return [
-      { code: '000001', name: '上证指数', value: 3256.78, change: 1.25, changePercent: 0.04 },
-      { code: '399001', name: '深证成指', value: 10856.32, change: -15.68, changePercent: -0.14 },
-      { code: '399006', name: '创业板指', value: 2156.45, change: 8.92, changePercent: 0.42 }
-    ]
+    // 上证指数(1.000001)、深证成指(0.399001)、创业板指(0.399006)
+    const codes = '1.000001,0.399001,0.399006'
+    const url = `${PUSH_URL}/api/qt/ulist.np/get?fltt=2&fields=f2,f3,f4,f12,f14&secids=${codes}`
+
+    const res = await request(url)
+    if (res.data && res.data.diff) {
+      return Object.values(res.data.diff).map(item => ({
+        code: item.f12,
+        name: item.f14,
+        value: item.f2,
+        change: item.f4,
+        changePercent: item.f3
+      }))
+    }
+    return []
   } catch (e) {
     console.error('获取指数失败:', e)
     return []
@@ -262,18 +267,75 @@ export async function getIndices() {
 
 /**
  * 获取板块行情
+ * 东方财富板块行情接口
  */
 export async function getSectors() {
   try {
-    // 模拟数据
-    return [
-      { name: '半导体', change: 3.56, funds: 25 },
-      { name: '新能源', change: 2.34, funds: 18 },
-      { name: '医药生物', change: -1.23, funds: 32 },
-      { name: '消费', change: 0.89, funds: 28 }
-    ]
+    const url = `${PUSH_URL}/api/qt/clist/get?pn=1&pz=20&fs=m:90+t:2&fields=f2,f3,f4,f6,f12,f14`
+
+    const res = await request(url)
+    if (res.data && res.data.diff) {
+      return Object.values(res.data.diff).map(item => ({
+        code: item.f12,
+        name: item.f14,
+        change: item.f3,
+        value: item.f2,
+        amount: item.f6
+      }))
+    }
+    return []
   } catch (e) {
     console.error('获取板块行情失败:', e)
+    return []
+  }
+}
+
+/**
+ * 获取热门板块（按成交额降序）
+ * 东方财富板块行情接口
+ */
+export async function getHotSectors() {
+  try {
+    const url = `${PUSH_URL}/api/qt/clist/get?pn=1&pz=10&fs=m:90+t:2&fid=f6&po=1&fields=f2,f3,f4,f6,f12,f14`
+
+    const res = await request(url)
+    if (res.data && res.data.diff) {
+      return Object.values(res.data.diff).map(item => ({
+        code: item.f12,
+        name: item.f14,
+        change: item.f3,
+        value: item.f2,
+        amount: item.f6
+      }))
+    }
+    return []
+  } catch (e) {
+    console.error('获取热门板块失败:', e)
+    return []
+  }
+}
+
+/**
+ * 获取领涨板块（按涨跌幅降序）
+ * 东方财富板块行情接口
+ */
+export async function getLeadSectors() {
+  try {
+    const url = `${PUSH_URL}/api/qt/clist/get?pn=1&pz=10&fs=m:90+t:2&fid=f3&po=1&fields=f2,f3,f4,f6,f12,f14`
+
+    const res = await request(url)
+    if (res.data && res.data.diff) {
+      return Object.values(res.data.diff).map(item => ({
+        code: item.f12,
+        name: item.f14,
+        change: item.f3,
+        value: item.f2,
+        amount: item.f6
+      }))
+    }
+    return []
+  } catch (e) {
+    console.error('获取领涨板块失败:', e)
     return []
   }
 }
@@ -284,13 +346,18 @@ export async function getSectors() {
  */
 export async function getFundValuation(fundCode) {
   try {
-    // 模拟数据 - 实际应调用估值API
-    return {
-      pe: 25.6,
-      pb: 3.2,
-      pePercentile: 65.5,
-      pbPercentile: 45.2
+    const res = await request(`https://fundgz.jrj.com.cn/js/${fundCode}.js`)
+    const match = res.match(/jsonpgz\((.*?)\)/)
+    if (match && match[1]) {
+      const json = JSON.parse(match[1])
+      return {
+        pe: parseFloat(json.pe) || 0,
+        pb: parseFloat(json.pb) || 0,
+        pePercentile: parseFloat(json.pe_percentile) || 0,
+        pbPercentile: parseFloat(json.pb_percentile) || 0
+      }
     }
+    return null
   } catch (e) {
     console.error('获取估值数据失败:', e)
     return null
@@ -305,5 +372,7 @@ export default {
   searchFund,
   getIndices,
   getSectors,
+  getHotSectors,
+  getLeadSectors,
   getFundValuation
 }

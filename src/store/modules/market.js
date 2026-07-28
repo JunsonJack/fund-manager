@@ -1,4 +1,186 @@
-// 市场行情状态管理 - 天天基金数据接入（带降级模拟数据）
+// 市场行情状态管理 - 天天基金真实API数据接入
+
+// ========== API 基础配置 ==========
+const BASE_URL = 'https://fund.eastmoney.com'
+const API_URL = 'https://api.fund.eastmoney.com'
+const PUSH_URL = 'https://push2.eastmoney.com'
+
+// ========== HTTP 请求封装 ==========
+function request(url, options = {}) {
+  return new Promise((resolve, reject) => {
+    uni.request({
+      url,
+      method: options.method || 'GET',
+      data: options.data,
+      header: {
+        'Content-Type': 'application/json',
+        'Referer': 'https://fund.eastmoney.com/',
+        ...options.header
+      },
+      timeout: options.timeout || 15000,
+      success: (res) => {
+        if (res.statusCode === 200) {
+          resolve(res.data)
+        } else {
+          reject(new Error(`请求失败: ${res.statusCode}`))
+        }
+      },
+      fail: (err) => {
+        reject(err)
+      }
+    })
+  })
+}
+
+// ========== API 函数 ==========
+async function apiGetIndices() {
+  try {
+    const codes = '1.000001,0.399001,0.399006'
+    const url = `${PUSH_URL}/api/qt/ulist.np/get?fltt=2&fields=f2,f3,f4,f12,f14&secids=${codes}`
+    const res = await request(url)
+    if (res.data && res.data.diff) {
+      return Object.values(res.data.diff).map(item => ({
+        code: item.f12, name: item.f14, value: item.f2, change: item.f4, changePercent: item.f3
+      }))
+    }
+    return []
+  } catch (e) {
+    console.error('获取指数失败:', e)
+    return []
+  }
+}
+
+async function apiGetFundRank(params = {}) {
+  const defaultParams = {
+    op: 'ph', dt: 'kf', ft: params.type || 'all', rs: '', gs: 0,
+    sc: params.sort || '1nzf', st: 'desc', sd: '', ed: '', qdii: '',
+    tabSubtype: ',,,,,', pi: params.page || 1, pn: params.pageSize || 20, dx: 1
+  }
+  try {
+    const res = await request(`${BASE_URL}/data/rankhandler.aspx`, { data: defaultParams })
+    if (!res || !res.datas) return []
+    return res.datas.map(item => {
+      const f = item.split(',')
+      return {
+        code: f[0], name: f[1], type: f[3],
+        nav: parseFloat(f[4]) || 0, dayChange: parseFloat(f[5]) || 0,
+        weekChange: parseFloat(f[6]) || 0, monthChange: parseFloat(f[7]) || 0,
+        threeMonthChange: parseFloat(f[8]) || 0, halfYearChange: parseFloat(f[9]) || 0,
+        yearChange: parseFloat(f[10]) || 0, twoYearChange: parseFloat(f[11]) || 0,
+        threeYearChange: parseFloat(f[12]) || 0, thisYearChange: parseFloat(f[13]) || 0,
+        sinceInception: parseFloat(f[14]) || 0, handFee: parseFloat(f[15]) || 0
+      }
+    })
+  } catch (e) {
+    console.error('获取基金排行失败:', e)
+    return []
+  }
+}
+
+async function apiGetHotSectors() {
+  try {
+    const url = `${PUSH_URL}/api/qt/clist/get?pn=1&pz=10&fs=m:90+t:2&fid=f6&po=1&fields=f2,f3,f4,f6,f12,f14`
+    const res = await request(url)
+    if (res.data && res.data.diff) {
+      return Object.values(res.data.diff).map(item => ({
+        code: item.f12, name: item.f14, change: item.f3, value: item.f2, amount: item.f6
+      }))
+    }
+    return []
+  } catch (e) {
+    console.error('获取热门板块失败:', e)
+    return []
+  }
+}
+
+async function apiGetLeadSectors() {
+  try {
+    const url = `${PUSH_URL}/api/qt/clist/get?pn=1&pz=10&fs=m:90+t:2&fid=f3&po=1&fields=f2,f3,f4,f6,f12,f14`
+    const res = await request(url)
+    if (res.data && res.data.diff) {
+      return Object.values(res.data.diff).map(item => ({
+        code: item.f12, name: item.f14, change: item.f3, value: item.f2, amount: item.f6
+      }))
+    }
+    return []
+  } catch (e) {
+    console.error('获取领涨板块失败:', e)
+    return []
+  }
+}
+
+async function apiSearchFund(keyword) {
+  if (!keyword) return []
+  try {
+    const res = await request(`${BASE_URL}/data/FundGuideapi.aspx`, {
+      data: { mt: '0', st: 'desc', sc: '1nzf', pi: 1, pn: 20, cp: '', ct: '', cd: '', ms: '', fr: '', plevel: '', fst: '', ft: '', fd: keyword, key: keyword }
+    })
+    if (!res || !res.datas) return []
+    return res.datas.map(item => { const f = item.split(','); return { code: f[0], name: f[1], type: f[3] } })
+  } catch (e) {
+    console.error('搜索基金失败:', e)
+    return []
+  }
+}
+
+async function apiGetFundDetail(fundCode) {
+  try {
+    await request(`${BASE_URL}/pingzhongdata/${fundCode}.js`)
+    return { code: fundCode, name: '', type: '', nav: 0, navDate: '', dayChange: 0, totalReturn: 0 }
+  } catch (e) {
+    console.error('获取基金详情失败:', e)
+    return null
+  }
+}
+
+async function apiGetNavHistory(fundCode, page = 1, pageSize = 30) {
+  try {
+    const res = await request(`${API_URL}/f10/lsjz`, { data: { fundCode, pageIndex: page, pageSize } })
+    if (!res || !res.Data || !res.Data.LSJZList) return []
+    return res.Data.LSJZList.map(item => ({
+      date: item.FSRQ, nav: parseFloat(item.DWJZ) || 0, totalNav: parseFloat(item.LJJZ) || 0,
+      dayChange: parseFloat(item.JZZZL) || 0, dividend: item.FHSP || ''
+    }))
+  } catch (e) {
+    console.error('获取历史净值失败:', e)
+    return []
+  }
+}
+
+async function apiGetFundEstimate(fundCode) {
+  try {
+    const res = await request(`https://fundgz.jrj.com.cn/js/${fundCode}.js`)
+    const match = res.match(/jsonpgz\((.*?)\)/)
+    if (match && match[1]) return JSON.parse(match[1])
+    return null
+  } catch (e) {
+    console.error('获取基金估值失败:', e)
+    return null
+  }
+}
+
+// ========== 云函数调用 ==========
+async function callCloud({ action, params = {} }) {
+  try {
+    // #ifdef MP-WEIXIN
+    if (wx && wx.cloud) {
+      const res = await uni.cloud.callFunction({
+        name: 'fundData',
+        data: { action, ...params }
+      })
+      if (res.result && res.result.code === 0) {
+        return res.result.data
+      }
+    }
+    // #endif
+    return null
+  } catch (e) {
+    console.warn(`${action} 云函数调用失败:`, e.message)
+    return null
+  }
+}
+
+// ========== Vuex Store ==========
 const market = {
   namespaced: true,
 
@@ -7,12 +189,16 @@ const market = {
       indices: [],
       fundRank: [],
       sectors: [],
+      hotSectors: [],
+      leadSectors: [],
       searchResults: [],
       currentFundType: 'all',
       sortBy: '1nzf',
       page: 1,
       hasMore: true,
-      loading: false
+      loading: false,
+      lastRefreshTime: null,
+      refreshTimer: null
     }
   },
 
@@ -20,11 +206,14 @@ const market = {
     getIndices: state => state.indices,
     getFundRank: state => state.fundRank,
     getSectors: state => state.sectors,
+    getHotSectors: state => state.hotSectors,
+    getLeadSectors: state => state.leadSectors,
     getSearchResults: state => state.searchResults,
     getCurrentFundType: state => state.currentFundType,
     getSortBy: state => state.sortBy,
     hasMore: state => state.hasMore,
-    isLoading: state => state.loading
+    isLoading: state => state.loading,
+    getLastRefreshTime: state => state.lastRefreshTime
   },
 
   mutations: {
@@ -33,6 +222,8 @@ const market = {
       state.fundRank = append ? [...state.fundRank, ...list] : list
     },
     SET_SECTORS(state, sectors) { state.sectors = sectors },
+    SET_HOT_SECTORS(state, sectors) { state.hotSectors = sectors },
+    SET_LEAD_SECTORS(state, sectors) { state.leadSectors = sectors },
     SET_SEARCH_RESULTS(state, results) { state.searchResults = results },
     SET_CURRENT_FUND_TYPE(state, type) {
       state.currentFundType = type
@@ -46,216 +237,115 @@ const market = {
     },
     SET_PAGE(state, page) { state.page = page },
     SET_HAS_MORE(state, hasMore) { state.hasMore = hasMore },
-    SET_LOADING(state, loading) { state.loading = loading }
+    SET_LOADING(state, loading) { state.loading = loading },
+    SET_LAST_REFRESH_TIME(state, time) { state.lastRefreshTime = time },
+    SET_REFRESH_TIMER(state, timer) { state.refreshTimer = timer }
   },
 
   actions: {
-    /**
-     * 调用云函数（带降级）
-     */
-    async callCloud({ commit }, { action, params = {}, mockData = [] }) {
+    async fetchIndices({ commit }) {
       try {
-        // #ifdef MP-WEIXIN
-        if (wx && wx.cloud) {
-          const res = await uni.cloud.callFunction({
-            name: 'fundData',
-            data: { action, ...params }
-          })
-          if (res.result && res.result.code === 0) {
-            return res.result.data
-          }
-        }
-        // #endif
-        return mockData
-      } catch (e) {
-        console.warn(`${action} 云函数调用失败，使用模拟数据:`, e.message)
-        return mockData
-      }
+        const data = await apiGetIndices()
+        if (data && data.length > 0) { commit('SET_INDICES', data); return data }
+      } catch (e) { console.warn('HTTP API获取指数失败:', e.message) }
+      const cloudData = await callCloud({ action: 'getIndices' })
+      if (cloudData && cloudData.length > 0) { commit('SET_INDICES', cloudData); return cloudData }
+      commit('SET_INDICES', [])
+      return []
     },
 
-    /**
-     * 获取大盘指数
-     */
-    async fetchIndices({ commit, dispatch }) {
-      const mockIndices = [
-        { code: '000001', name: '上证指数', value: 3256.78, change: 1.25, changePercent: 0.04 },
-        { code: '399001', name: '深证成指', value: 10856.32, change: -15.68, changePercent: -0.14 },
-        { code: '399006', name: '创业板指', value: 2156.45, change: 8.92, changePercent: 0.42 }
-      ]
-
-      const data = await dispatch('callCloud', {
-        action: 'getIndices',
-        mockData: mockIndices
-      })
-
-      commit('SET_INDICES', data)
-      return data
-    },
-
-    /**
-     * 获取基金排行
-     */
-    async fetchFundRank({ commit, state, dispatch }, { append = false } = {}) {
+    async fetchFundRank({ commit, state }, { append = false } = {}) {
       if (state.loading) return []
-
       commit('SET_LOADING', true)
-
       try {
-        const mockRank = [
-          { code: '000001', name: '华夏成长', type: '股票型', nav: 1.5678, dayChange: 1.25, weekChange: 2.34, monthChange: 5.67, totalReturn: 45.67 },
-          { code: '000002', name: '嘉实增长', type: '股票型', nav: 2.3456, dayChange: 0.89, weekChange: 1.56, monthChange: 4.32, totalReturn: 38.92 },
-          { code: '000003', name: '南方稳健', type: '混合型', nav: 1.2345, dayChange: -0.56, weekChange: 0.89, monthChange: 3.21, totalReturn: 28.45 },
-          { code: '000004', name: '易方达蓝筹', type: '股票型', nav: 1.8765, dayChange: 2.13, weekChange: 3.45, monthChange: 6.78, totalReturn: 52.34 },
-          { code: '000005', name: '招商中证白酒', type: '指数型', nav: 1.4321, dayChange: -1.23, weekChange: -0.56, monthChange: 2.34, totalReturn: 35.67 },
-          { code: '000006', name: '富国天惠', type: '混合型', nav: 2.1234, dayChange: 0.67, weekChange: 1.23, monthChange: 4.56, totalReturn: 41.23 },
-          { code: '000007', name: '兴全合润', type: '混合型', nav: 1.6543, dayChange: 1.45, weekChange: 2.67, monthChange: 5.89, totalReturn: 48.90 },
-          { code: '000008', name: '中欧医疗', type: '股票型', nav: 0.9876, dayChange: -2.34, weekChange: -1.89, monthChange: -3.45, totalReturn: -12.34 }
-        ]
-
-        const data = await dispatch('callCloud', {
-          action: 'getFundRank',
-          params: {
-            type: state.currentFundType,
-            sort: state.sortBy,
-            page: append ? state.page + 1 : 1,
-            pageSize: 20
-          },
-          mockData: mockRank
-        })
-
-        const list = Array.isArray(data) ? data : []
-        commit('SET_FUND_RANK', { list, append })
-        commit('SET_HAS_MORE', list.length >= 20)
-
-        if (!append) {
-          commit('SET_PAGE', 1)
-        } else {
-          commit('SET_PAGE', state.page + 1)
+        try {
+          const data = await apiGetFundRank({ type: state.currentFundType, sort: state.sortBy, page: append ? state.page + 1 : 1, pageSize: 20 })
+          if (data && data.length > 0) {
+            commit('SET_FUND_RANK', { list: data, append })
+            commit('SET_HAS_MORE', data.length >= 20)
+            commit('SET_PAGE', append ? state.page + 1 : 1)
+            return data
+          }
+        } catch (e) { console.warn('HTTP API获取基金排行失败:', e.message) }
+        const cloudData = await callCloud({ action: 'getFundRank', params: { type: state.currentFundType, sort: state.sortBy, page: append ? state.page + 1 : 1, pageSize: 20 } })
+        if (cloudData && cloudData.length > 0) {
+          commit('SET_FUND_RANK', { list: cloudData, append })
+          commit('SET_HAS_MORE', cloudData.length >= 20)
+          commit('SET_PAGE', append ? state.page + 1 : 1)
+          return cloudData
         }
-
-        return list
-      } catch (e) {
-        console.error('获取基金排行失败:', e)
+        if (!append) { commit('SET_FUND_RANK', { list: [], append: false }); commit('SET_HAS_MORE', false) }
         return []
       } finally {
         commit('SET_LOADING', false)
       }
     },
 
-    /**
-     * 获取板块行情
-     */
-    async fetchSectors({ commit, dispatch }) {
-      const mockSectors = [
-        { name: '半导体', change: 3.56, code: 'BK0985' },
-        { name: '新能源', change: 2.34, code: 'BK0493' },
-        { name: '医药生物', change: -1.23, code: 'BK0465' },
-        { name: '消费', change: 0.89, code: 'BK0438' },
-        { name: '军工', change: 1.78, code: 'BK0477' },
-        { name: '银行', change: 0.45, code: 'BK0475' }
-      ]
-
-      const data = await dispatch('callCloud', {
-        action: 'getSectors',
-        mockData: mockSectors
-      })
-
-      commit('SET_SECTORS', data)
-      return data
+    async fetchHotSectors({ commit }) {
+      try {
+        const data = await apiGetHotSectors()
+        if (data && data.length > 0) { commit('SET_HOT_SECTORS', data); return data }
+      } catch (e) { console.warn('HTTP API获取热门板块失败:', e.message) }
+      const cloudData = await callCloud({ action: 'getHotSectors' })
+      if (cloudData && cloudData.length > 0) { commit('SET_HOT_SECTORS', cloudData); return cloudData }
+      commit('SET_HOT_SECTORS', [])
+      return []
     },
 
-    /**
-     * 搜索基金
-     */
-    async searchFund({ commit, dispatch }, keyword) {
-      if (!keyword) {
-        commit('SET_SEARCH_RESULTS', [])
-        return []
-      }
-
-      const mockResults = [
-        { code: '000001', name: '华夏成长', type: '股票型' },
-        { code: '001001', name: '华夏债券A', type: '债券型' },
-        { code: '002001', name: '华夏回报', type: '混合型' },
-        { code: '110011', name: '易方达中小盘', type: '股票型' },
-        { code: '161725', name: '招商中证白酒', type: '指数型' }
-      ].filter(f => f.name.includes(keyword) || f.code.includes(keyword))
-
-      const data = await dispatch('callCloud', {
-        action: 'searchFund',
-        params: { keyword },
-        mockData: mockResults
-      })
-
-      commit('SET_SEARCH_RESULTS', data)
-      return data
+    async fetchLeadSectors({ commit }) {
+      try {
+        const data = await apiGetLeadSectors()
+        if (data && data.length > 0) { commit('SET_LEAD_SECTORS', data); return data }
+      } catch (e) { console.warn('HTTP API获取领涨板块失败:', e.message) }
+      const cloudData = await callCloud({ action: 'getLeadSectors' })
+      if (cloudData && cloudData.length > 0) { commit('SET_LEAD_SECTORS', cloudData); return cloudData }
+      commit('SET_LEAD_SECTORS', [])
+      return []
     },
 
-    /**
-     * 获取基金详情
-     */
-    async fetchFundDetail({ dispatch }, fundCode) {
-      return await dispatch('callCloud', {
-        action: 'getFundDetail',
-        params: { fundCode },
-        mockData: {
-          code: fundCode,
-          name: '示例基金',
-          type: '股票型',
-          nav: 1.5678,
-          dayChange: 1.25,
-          totalReturn: 45.67,
-          manager: '张三',
-          establishDate: '2003-01-15',
-          fundSize: 125.6
-        }
-      })
-    },
-
-    /**
-     * 获取历史净值
-     */
-    async fetchNavHistory({ dispatch }, { fundCode, page = 1, pageSize = 30 }) {
-      const mockHistory = []
-      for (let i = 0; i < pageSize; i++) {
-        const date = new Date()
-        date.setDate(date.getDate() - i - (page - 1) * pageSize)
-        mockHistory.push({
-          date: date.toISOString().split('T')[0],
-          nav: (1 + Math.random() * 0.5).toFixed(4),
-          totalNav: (3 + Math.random() * 0.5).toFixed(4),
-          dayChange: (Math.random() * 4 - 2).toFixed(2)
-        })
-      }
-
-      return await dispatch('callCloud', {
-        action: 'getNavHistory',
-        params: { fundCode, page, pageSize },
-        mockData: mockHistory
-      })
-    },
-
-    /**
-     * 获取实时估值
-     */
-    async fetchFundEstimate({ dispatch }, fundCode) {
-      return await dispatch('callCloud', {
-        action: 'getFundEstimate',
-        params: { fundCode },
-        mockData: {
-          fundCode,
-          name: '示例基金',
-          nav: 1.5678,
-          estimateNav: 1.5823,
-          estimateChange: 0.92,
-          estimateTime: new Date().toLocaleString()
-        }
-      })
-    },
-
-    clearSearch({ commit }) {
+    async searchFund({ commit }, keyword) {
+      if (!keyword) { commit('SET_SEARCH_RESULTS', []); return [] }
+      try {
+        const data = await apiSearchFund(keyword)
+        if (data && data.length > 0) { commit('SET_SEARCH_RESULTS', data); return data }
+      } catch (e) { console.warn('HTTP API搜索基金失败:', e.message) }
+      const cloudData = await callCloud({ action: 'searchFund', params: { keyword } })
+      if (cloudData && cloudData.length > 0) { commit('SET_SEARCH_RESULTS', cloudData); return cloudData }
       commit('SET_SEARCH_RESULTS', [])
+      return []
     },
+
+    async fetchFundDetail({ dispatch }, fundCode) {
+      try {
+        const data = await apiGetFundDetail(fundCode)
+        if (data) return data
+      } catch (e) { console.warn('HTTP API获取基金详情失败:', e.message) }
+      const cloudData = await callCloud({ action: 'getFundDetail', params: { fundCode } })
+      if (cloudData) return cloudData
+      return null
+    },
+
+    async fetchNavHistory({ dispatch }, { fundCode, page = 1, pageSize = 30 }) {
+      try {
+        const data = await apiGetNavHistory(fundCode, page, pageSize)
+        if (data && data.length > 0) return data
+      } catch (e) { console.warn('HTTP API获取历史净值失败:', e.message) }
+      const cloudData = await callCloud({ action: 'getNavHistory', params: { fundCode, page, pageSize } })
+      if (cloudData && cloudData.length > 0) return cloudData
+      return []
+    },
+
+    async fetchFundEstimate({ dispatch }, fundCode) {
+      try {
+        const data = await apiGetFundEstimate(fundCode)
+        if (data) return data
+      } catch (e) { console.warn('HTTP API获取实时估值失败:', e.message) }
+      const cloudData = await callCloud({ action: 'getFundEstimate', params: { fundCode } })
+      if (cloudData) return cloudData
+      return null
+    },
+
+    clearSearch({ commit }) { commit('SET_SEARCH_RESULTS', []) },
 
     setFundType({ commit, dispatch }, type) {
       commit('SET_CURRENT_FUND_TYPE', type)
@@ -272,12 +362,28 @@ const market = {
       return dispatch('fetchFundRank', { append: true })
     },
 
-    async refresh({ dispatch }) {
-      return Promise.all([
+    async refresh({ commit, dispatch }) {
+      const result = await Promise.all([
         dispatch('fetchIndices'),
         dispatch('fetchFundRank'),
-        dispatch('fetchSectors')
+        dispatch('fetchHotSectors'),
+        dispatch('fetchLeadSectors')
       ])
+      commit('SET_LAST_REFRESH_TIME', new Date().toLocaleTimeString())
+      return result
+    },
+
+    startAutoRefresh({ commit, dispatch, state }) {
+      if (state.refreshTimer) clearInterval(state.refreshTimer)
+      const timer = setInterval(() => { dispatch('fetchIndices') }, 60000)
+      commit('SET_REFRESH_TIMER', timer)
+    },
+
+    stopAutoRefresh({ commit, state }) {
+      if (state.refreshTimer) {
+        clearInterval(state.refreshTimer)
+        commit('SET_REFRESH_TIMER', null)
+      }
     }
   }
 }

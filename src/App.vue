@@ -41,7 +41,7 @@ export default {
 
 /* 全局样式 */
 page {
-  background-color: #f5f5f5;
+  background-color: #FFF5F5;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 28rpx;
   color: #333333;
@@ -55,11 +55,12 @@ page {
 
 /* 卡片样式 */
 .card {
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.88);
   border-radius: 16rpx;
   padding: 24rpx;
   margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2rpx 12rpx rgba(232, 69, 60, 0.08);
+  backdrop-filter: blur(10px);
 }
 
 /* 涨跌颜色 */
@@ -77,7 +78,7 @@ page {
 
 /* 按钮样式 */
 .btn-primary {
-  background-color: #1890ff;
+  background-color: #E8453C;
   color: #ffffff;
   border-radius: 8rpx;
   padding: 16rpx 32rpx;
@@ -86,8 +87,8 @@ page {
 }
 
 .btn-secondary {
-  background-color: #f5f5f5;
-  color: #666666;
+  background-color: #FFF1F0;
+  color: #E8453C;
   border-radius: 8rpx;
   padding: 16rpx 32rpx;
   font-size: 28rpx;
@@ -97,7 +98,7 @@ page {
 /* 分割线 */
 .divider {
   height: 1rpx;
-  background-color: #eeeeee;
+  background-color: #FFE8E6;
   margin: 20rpx 0;
 }
 
@@ -170,7 +171,8 @@ page {
   bottom: 0;
   padding-bottom: constant(safe-area-inset-bottom);
   padding-bottom: env(safe-area-inset-bottom);
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
   z-index: 999;
 }
 
@@ -195,8 +197,9 @@ page {
   padding: 20rpx 32rpx;
   padding-bottom: calc(20rpx + constant(safe-area-inset-bottom));
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-  background-color: #ffffff;
-  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 -2rpx 10rpx rgba(232, 69, 60, 0.08);
   z-index: 999;
 }
 
@@ -214,7 +217,8 @@ page {
   bottom: 0;
   padding-bottom: constant(safe-area-inset-bottom);
   padding-bottom: env(safe-area-inset-bottom);
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
   z-index: 1000;
 }
 

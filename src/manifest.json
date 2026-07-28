@@ -45,8 +45,7 @@
     "requiredPrivateInfos": [],
     "optimization": {
       "subPackages": true
-    },
-    "navigateToMiniProgramAppIdList": []
+    }
   },
   "mp-alipay": {
     "usingComponents": true

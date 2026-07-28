@@ -199,7 +199,7 @@ async function getIndices() {
     const json = JSON.parse(data)
 
     if (json.data && json.data.diff) {
-      const indices = json.data.diff.map(item => ({
+      const indices = Object.values(json.data.diff).map(item => ({
         code: item.f12,
         name: item.f14,
         value: item.f2,
@@ -257,16 +257,17 @@ async function getFundEstimate(params) {
 async function getSectors() {
   try {
     // 东方财富板块行情
-    const url = `http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20&fs=m:90+t:2&fields=f2,f3,f4,f12,f14`
+    const url = `http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=20&fs=m:90+t:2&fields=f2,f3,f4,f6,f12,f14`
     const data = await httpRequest(url)
     const json = JSON.parse(data)
 
     if (json.data && json.data.diff) {
-      const sectors = json.data.diff.map(item => ({
+      const sectors = Object.values(json.data.diff).map(item => ({
         code: item.f12,
         name: item.f14,
         change: item.f3,
-        value: item.f2
+        value: item.f2,
+        amount: item.f6
       }))
 
       return { code: 0, data: sectors }
@@ -275,6 +276,62 @@ async function getSectors() {
     return { code: 0, data: [] }
   } catch (e) {
     console.error('获取板块行情失败:', e)
+    return { code: -1, message: e.message }
+  }
+}
+
+/**
+ * 获取热门板块（按成交额降序）
+ */
+async function getHotSectors() {
+  try {
+    const url = `http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=10&fs=m:90+t:2&fid=f6&po=1&fields=f2,f3,f4,f6,f12,f14`
+    const data = await httpRequest(url)
+    const json = JSON.parse(data)
+
+    if (json.data && json.data.diff) {
+      const sectors = Object.values(json.data.diff).map(item => ({
+        code: item.f12,
+        name: item.f14,
+        change: item.f3,
+        value: item.f2,
+        amount: item.f6
+      }))
+
+      return { code: 0, data: sectors }
+    }
+
+    return { code: 0, data: [] }
+  } catch (e) {
+    console.error('获取热门板块失败:', e)
+    return { code: -1, message: e.message }
+  }
+}
+
+/**
+ * 获取领涨板块（按涨跌幅降序）
+ */
+async function getLeadSectors() {
+  try {
+    const url = `http://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=10&fs=m:90+t:2&fid=f3&po=1&fields=f2,f3,f4,f6,f12,f14`
+    const data = await httpRequest(url)
+    const json = JSON.parse(data)
+
+    if (json.data && json.data.diff) {
+      const sectors = Object.values(json.data.diff).map(item => ({
+        code: item.f12,
+        name: item.f14,
+        change: item.f3,
+        value: item.f2,
+        amount: item.f6
+      }))
+
+      return { code: 0, data: sectors }
+    }
+
+    return { code: 0, data: [] }
+  } catch (e) {
+    console.error('获取领涨板块失败:', e)
     return { code: -1, message: e.message }
   }
 }
@@ -329,6 +386,12 @@ exports.main = async (event, context) => {
         break
       case 'getSectors':
         result = await getSectors()
+        break
+      case 'getHotSectors':
+        result = await getHotSectors()
+        break
+      case 'getLeadSectors':
+        result = await getLeadSectors()
         break
       default:
         result = { code: -1, message: '未知操作: ' + action }
