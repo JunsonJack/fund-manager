@@ -198,13 +198,13 @@ export default {
   border-radius: 32rpx;
   
   &.active {
-    color: #1890ff;
-    background-color: #e6f7ff;
+    color: #E8453C;
+    background-color: #FFF1F0;
   }
   
   &.add {
-    color: #1890ff;
-    background-color: #e6f7ff;
+    color: #E8453C;
+    background-color: #FFF1F0;
   }
 }
 
@@ -228,7 +228,7 @@ export default {
   
   .edit-btn {
     font-size: 26rpx;
-    color: #1890ff;
+    color: #E8453C;
   }
 }
 
@@ -262,8 +262,8 @@ export default {
       
       .fund-group {
         font-size: 22rpx;
-        color: #1890ff;
-        background-color: #e6f7ff;
+        color: #E8453C;
+        background-color: #FFF1F0;
         padding: 2rpx 12rpx;
         border-radius: 4rpx;
         margin-top: 8rpx;
@@ -333,7 +333,7 @@ export default {
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  background-color: #1890ff;
+  background-color: #E8453C;
   color: #ffffff;
   padding: 20rpx 48rpx;
   border-radius: 40rpx;

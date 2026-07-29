@@ -208,7 +208,7 @@ export default {
 }
 
 .overview-card {
-  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  background: linear-gradient(135deg, #E8453C 0%, #CF1322 100%);
   border-radius: 16rpx;
   padding: 32rpx;
   color: #ffffff;
@@ -280,7 +280,7 @@ export default {
   
   .section-action {
     font-size: 26rpx;
-    color: #1890ff;
+    color: #E8453C;
   }
 }
 
@@ -417,7 +417,7 @@ export default {
       
       .bar-fill {
         height: 100%;
-        background: linear-gradient(90deg, #1890ff, #36cfc9);
+        background: linear-gradient(90deg, #E8453C, #FF7875);
         border-radius: 8rpx;
       }
     }

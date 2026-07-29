@@ -2,8 +2,8 @@
   "name": "智投汪星",
   "appid": "wxfd1f6e241895ecc3",
   "description": "智投汪星小程序 - 一只懂基金的汪，陪你一起养基",
-  "versionName": "1.0.0",
-  "versionCode": "100",
+  "versionName": "1.0.6",
+  "versionCode": "7",
   "transformPx": false,
   "app-plus": {
     "usingComponents": true,

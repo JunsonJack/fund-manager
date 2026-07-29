@@ -1,7 +1,14 @@
 <script>
+import { VERSION_TEXT } from './config/version'
+
 export default {
   onLaunch() {
     console.log('App Launch')
+
+    // 存储版本号到本地
+    try {
+      uni.setStorageSync('app_version', VERSION_TEXT)
+    } catch (e) {}
 
     // #ifdef MP-WEIXIN
     // 初始化微信云开发

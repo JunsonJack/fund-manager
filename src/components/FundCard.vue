@@ -110,8 +110,8 @@ export default {
   
   .fund-type {
     font-size: 22rpx;
-    color: #1890ff;
-    background-color: #e6f7ff;
+    color: #E8453C;
+    background-color: #FFF1F0;
     padding: 4rpx 12rpx;
     border-radius: 4rpx;
     display: inline-block;
@@ -139,9 +139,9 @@ export default {
 .fund-actions {
   .action-btn {
     font-size: 24rpx;
-    color: #1890ff;
+    color: #E8453C;
     padding: 8rpx 16rpx;
-    border: 1rpx solid #1890ff;
+    border: 1rpx solid #E8453C;
     border-radius: 8rpx;
   }
 }

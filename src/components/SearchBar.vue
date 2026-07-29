@@ -118,7 +118,7 @@ export default {
 
 .cancel-btn {
   font-size: 28rpx;
-  color: #1890ff;
+  color: #E8453C;
   margin-left: 20rpx;
 }
 </style>

@@ -251,7 +251,7 @@ export default {
 }
 
 .fund-header {
-  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  background: linear-gradient(135deg, #E8453C 0%, #CF1322 100%);
   border-radius: 16rpx;
   padding: 32rpx;
   color: #ffffff;
@@ -330,7 +330,7 @@ export default {
     }
     
     &.primary {
-      background-color: #1890ff;
+      background-color: #E8453C;
       
       .action-text {
         color: #ffffff;

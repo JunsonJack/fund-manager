@@ -5,9 +5,10 @@
   "main": "main.js",
   "scripts": {
     "dev:mp-weixin": "uni -p mp-weixin",
-    "build:mp-weixin": "uni build -p mp-weixin",
+    "build:mp-weixin": "node bump-version.js && uni build -p mp-weixin",
     "dev:h5": "uni -p h5",
-    "build:h5": "uni build -p h5"
+    "build:h5": "node bump-version.js && uni build -p h5",
+    "bump": "node bump-version.js"
   },
   "dependencies": {
     "@dcloudio/uni-components": "^3.0.0-alpha-5020220260725001",

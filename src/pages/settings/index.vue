@@ -19,7 +19,7 @@
       <view class="settings-group">
         <view class="settings-item" @click="toggleNotify">
           <text class="item-label">信号推送</text>
-          <switch class="item-switch" :checked="settings.notifyEnabled" color="#1890ff" />
+          <switch class="item-switch" :checked="settings.notifyEnabled" color="#E8453C" />
         </view>
         <view class="settings-item" @click="showRiskLevel">
           <text class="item-label">风险偏好</text>
@@ -48,7 +48,7 @@
         <view class="settings-item" @click="checkUpdate">
           <text class="item-label">检查更新</text>
           <view class="item-value">
-            <text>v1.0.0</text>
+            <text>{{ versionText }}</text>
             <text class="arrow">›</text>
           </view>
         </view>
@@ -80,6 +80,11 @@
     <view class="logout-btn" v-if="isLoggedIn" @click="logout">
       <text>退出登录</text>
     </view>
+
+    <!-- 版本号 -->
+    <view class="version-footer">
+      <text class="version-text">{{ versionText }}</text>
+    </view>
   </view>
 </template>
 
@@ -89,8 +94,13 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   data() {
     return {
-      cacheSize: '12.5MB'
+      cacheSize: '12.5MB',
+      versionText: 'v1.0.0'
     }
+  },
+
+  onLoad() {
+    this.loadVersion()
   },
   
   computed: {
@@ -124,6 +134,15 @@ export default {
     async initData() {
       // 获取缓存大小
       this.getCacheSize()
+      // 获取版本号
+      this.loadVersion()
+    },
+
+    loadVersion() {
+      try {
+        const v = uni.getStorageSync('app_version')
+        if (v) this.versionText = v
+      } catch (e) {}
     },
     
     getCacheSize() {
@@ -186,7 +205,7 @@ export default {
     showAbout() {
       uni.showModal({
         title: '关于我们',
-        content: '基金管理小程序 v1.0.0\n一款专业的基金管理工具，提供市场行情、自选基金、持仓管理和波段信号等功能。\n\n免责声明：本应用提供的信息仅供参考，不构成任何投资建议。基金投资有风险，入市需谨慎。',
+        content: `智投汪星 ${this.versionText}\n一款专业的基金管理工具，提供市场行情、自选基金、持仓管理和波段信号等功能。\n\n免责声明：本应用提供的信息仅供参考，不构成任何投资建议。基金投资有风险，入市需谨慎。`,
         showCancel: false
       })
     },
@@ -217,23 +236,23 @@ export default {
 
 <style lang="scss" scoped>
 .page-container {
-  background-color: #f5f5f5;
+  background-color: #FFF5F5;
   min-height: 100vh;
   padding: 20rpx;
 }
 
 .user-section {
-  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  background: linear-gradient(135deg, #E8453C 0%, #CF1322 100%);
   border-radius: 16rpx;
   padding: 32rpx;
   display: flex;
   align-items: center;
   margin-bottom: 20rpx;
   color: #ffffff;
-  
+
   .user-avatar {
     margin-right: 24rpx;
-    
+
     .avatar {
       width: 120rpx;
       height: 120rpx;
@@ -241,16 +260,16 @@ export default {
       background-color: rgba(255, 255, 255, 0.2);
     }
   }
-  
+
   .user-info {
     flex: 1;
-    
+
     .user-name {
       font-size: 32rpx;
       font-weight: 600;
       display: block;
     }
-    
+
     .user-id {
       font-size: 24rpx;
       opacity: 0.8;
@@ -258,12 +277,12 @@ export default {
       margin-top: 8rpx;
     }
   }
-  
+
   .login-btn {
     background-color: rgba(255, 255, 255, 0.2);
     padding: 12rpx 32rpx;
     border-radius: 32rpx;
-    
+
     text {
       font-size: 26rpx;
     }
@@ -275,10 +294,11 @@ export default {
 }
 
 .settings-group {
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.88);
   border-radius: 16rpx;
   margin-bottom: 20rpx;
   overflow: hidden;
+  backdrop-filter: blur(10px);
 }
 
 .settings-item {
@@ -286,47 +306,58 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 28rpx 24rpx;
-  border-bottom: 1rpx solid #f5f5f5;
-  
+  border-bottom: 1rpx solid #FFF1F0;
+
   &:last-child {
     border-bottom: none;
   }
-  
+
   .item-label {
     font-size: 28rpx;
     color: #333333;
   }
-  
+
   .item-value {
     display: flex;
     align-items: center;
-    
+
     text {
       font-size: 26rpx;
       color: #999999;
     }
-    
+
     .arrow {
       font-size: 32rpx;
       margin-left: 8rpx;
     }
   }
-  
+
   .item-switch {
     transform: scale(0.8);
   }
 }
 
 .logout-btn {
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.88);
   border-radius: 16rpx;
   padding: 28rpx;
   text-align: center;
   margin-top: 40rpx;
-  
+  backdrop-filter: blur(10px);
+
   text {
     font-size: 28rpx;
-    color: #ff4d4f;
+    color: #E8453C;
+  }
+}
+
+.version-footer {
+  text-align: center;
+  padding: 40rpx 0 20rpx;
+
+  .version-text {
+    font-size: 22rpx;
+    color: #CCCCCC;
   }
 }
 </style>

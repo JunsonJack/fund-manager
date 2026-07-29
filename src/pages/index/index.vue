@@ -6,6 +6,9 @@
         <text class="icon-search">搜索</text>
         <text class="placeholder">搜索基金代码/名称</text>
       </view>
+      <view class="settings-btn" @click="goToSettings">
+        <text class="icon-settings">⚙</text>
+      </view>
     </view>
     
     <!-- 大盘指数 -->
@@ -331,6 +334,12 @@ export default {
         url: '/pages/search/index'
       })
     },
+
+    goToSettings() {
+      uni.navigateTo({
+        url: '/pages/settings/index'
+      })
+    },
     
     goToFundDetail(fund) {
       uni.navigateTo({
@@ -354,24 +363,44 @@ export default {
 }
 
 .search-bar {
+  display: flex;
+  align-items: center;
   margin-bottom: 20rpx;
-  
+  gap: 16rpx;
+
   .search-input {
+    flex: 1;
     display: flex;
     align-items: center;
     background-color: rgba(255, 255, 255, 0.88);
     border-radius: 32rpx;
     padding: 16rpx 24rpx;
     backdrop-filter: blur(10px);
-    
+
     .icon-search {
       color: #999999;
       margin-right: 12rpx;
     }
-    
+
     .placeholder {
       color: #cccccc;
       font-size: 28rpx;
+    }
+  }
+
+  .settings-btn {
+    width: 68rpx;
+    height: 68rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.88);
+    border-radius: 50%;
+    backdrop-filter: blur(10px);
+
+    .icon-settings {
+      font-size: 36rpx;
+      color: #666666;
     }
   }
 }
